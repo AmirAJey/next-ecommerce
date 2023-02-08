@@ -19,8 +19,29 @@ function reducer(state, action){
       const newItems = existing ? state.cart.items.map(item => {
         if (item.product.id === newItem.id) item.count ++
         return item
-      }) : [...state.cart.items, {product: newItem, count: 1}]
+      }) : [...state.cart.items, {product: newItem, count: 1, id: crypto.randomUUID()}]
       return {...state, cart: {...state.cart, items: newItems, count: state.cart.count ++}}
+    }
+    case 'CART_REMOVE_ITEM': {
+      const cartId = action.payload
+      let count = state.cart.count
+      const items = state.cart.items.filter(item => {
+        if (item.id === cartId) {
+          count -= item.count
+          return false
+        }
+        return true
+      })
+      return {...state, cart: {...state.cart, items, count}}
+    }
+    case 'CART_UPDATE_ITEM_COUNT': {
+      const {cartId, quantity} = action.payload
+      const newState = {...state}
+      const idx = newState.cart.items.findIndex(item => item.id === cartId)
+      const prevCount = newState.cart.items[idx].count
+      newState.cart.items[idx].count = quantity
+      newState.cart.count = state.cart.count - prevCount + quantity
+      return newState
     }
     default:
       return state
