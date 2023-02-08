@@ -1,4 +1,5 @@
 import {createContext, useReducer, useContext} from "react"
+import Cookies from "js-cookie"
 
 const StoreContext = createContext({
   state: {cart: {items: [], count: 0}},
@@ -7,8 +8,9 @@ const StoreContext = createContext({
 
 export const useStore = () => useContext(StoreContext)
 
+const cartData = Cookies.get('cart')
 const initialState = {
-  cart: {items: [], count: 0}
+  cart: cartData ? JSON.parse(cartData) : {items: [], count: 0}
 }
 
 function reducer(state, action){
@@ -20,19 +22,22 @@ function reducer(state, action){
         if (item.product.id === newItem.id) item.count ++
         return item
       }) : [...state.cart.items, {product: newItem, count: 1, id: crypto.randomUUID()}]
-      return {...state, cart: {...state.cart, items: newItems, count: state.cart.count ++}}
+      const cart = {...state.cart, items: newItems, count: state.cart.count ++}
+      Cookies.set('cart', JSON.stringify(cart))
+      return {...state, cart}
     }
     case 'CART_REMOVE_ITEM': {
       const cartId = action.payload
-      let count = state.cart.count
-      const items = state.cart.items.filter(item => {
+      const newState = {...state}
+      newState.cart.items = newState.cart.items.filter(item => {
         if (item.id === cartId) {
-          count -= item.count
+          newState.cart.count -= item.count
           return false
         }
         return true
       })
-      return {...state, cart: {...state.cart, items, count}}
+      Cookies.set('cart', JSON.stringify(newState.cart))
+      return newState
     }
     case 'CART_UPDATE_ITEM_COUNT': {
       const {cartId, quantity} = action.payload
@@ -41,6 +46,7 @@ function reducer(state, action){
       const prevCount = newState.cart.items[idx].count
       newState.cart.items[idx].count = quantity
       newState.cart.count = state.cart.count - prevCount + quantity
+      Cookies.set('cart', JSON.stringify(newState.cart))
       return newState
     }
     default:

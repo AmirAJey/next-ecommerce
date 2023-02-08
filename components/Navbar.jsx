@@ -1,9 +1,13 @@
 import { useStore } from '@/utils/store';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Navbar = () => {
-  const { state: { cart: { count } } } = useStore();
+  const { state } = useStore();
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    setCount(state.cart.count)
+  }, [state.cart.count])
   return (
     <nav className="flex items-center justify-between py-3">
       <h2 className="text-lg font-bold">
