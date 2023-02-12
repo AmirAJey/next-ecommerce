@@ -56,6 +56,10 @@
   .badge {
     @apply center-flex bg-red-500 text-xs w-6 aspect-square rounded-full text-white
   }
+
+  .input {
+    @apply p-2 bg-transparent border rounded w-full ring-indigo-300 focus:ring outline-none aria-[invalid='true']:ring-red-300 aria-[invalid='true']:ring
+  }
 }
 
 /* :root {

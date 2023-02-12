@@ -4,6 +4,7 @@ import Image from 'next/image';
 import React from 'react';
 import { CiCircleRemove } from 'react-icons/ci';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 
 const Table = ({ items, onRemove, onChange }) => {
   return (
@@ -89,7 +90,9 @@ const Cart = () => {
               Subtotal({state.cart.count}):
               <span>${subtotal}</span>
             </h1>
-            <button className="primary mt-3 w-full">Check Out</button>
+            <Link href="/login?redirect=/shipping">
+              <button className="primary mt-3 w-full">Check Out</button>
+            </Link>
           </div>
         </div>
       ) : (
